@@ -23,6 +23,8 @@ documented with simulation output and waveform screenshots.
 |---|---------|-------|--------|
 | P01 | 4-Bit Adder | Verilog/SystemVerilog Basics | ✅ Complete |
 
+*More projects will be added as I keep learning.*
+
 ---
 
 ## Tools Used
