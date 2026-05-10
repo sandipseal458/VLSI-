@@ -21,7 +21,7 @@ documented with simulation output and waveform screenshots.
 
 | # | Project | Skill | Status |
 |---|---------|-------|--------|
-| P01 | 4-Bit Adder | Verilog/SystemVerilog Basics | ✅ Complete |
+| P01 | 4-Bit Adder | Verilog Basics | ✅ Complete |
 
 *More projects will be added as I keep learning.*
 
