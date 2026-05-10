@@ -5,7 +5,7 @@ module fourbitAdder( x, y, sum, carryin, carryout);
   output reg [3:0]sum;
   output reg carryout;
   
-  always @(x or y or carryin)
+  always @(*)
     begin
       {carryout,sum} = x + y + carryin;
     end
