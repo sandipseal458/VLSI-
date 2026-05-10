@@ -1,4 +1,4 @@
-# VLSI Projects — NIT Durgapur ECE 2025
+# VLSI Projects
 
 This repository contains all my digital design and verification projects, ranging from basic combinational logic to complex RTL systems. built progressively from Year 1 through Year 4 as part of my path toward semiconductor engineering roles.
 
