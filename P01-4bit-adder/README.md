@@ -9,7 +9,7 @@ EDA Playground using Cadence Xcelium.
 ## What It Does
 
 This module takes two 4-bit binary numbers as inputs
-(x and y) and produces a 4-bit sum and a 1-bit carry
+(x and y and carry input) and produces a 4-bit sum and a 1-bit carry
 output. When the addition result exceeds 15 — the
 maximum value a 4-bit number can hold — the carry bit
 is set to 1, indicating overflow into a fifth bit.
