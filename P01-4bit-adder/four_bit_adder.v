@@ -1,4 +1,4 @@
-module fourbitAdder( x, y, sum, carryin, carryout);
+module four_bit_adder( x, y, sum, carryin, carryout);
   input [3:0]x;
   input [3:0]y;
   input carryin;
