@@ -44,7 +44,7 @@ cases of 0+0 (minimum) and 15+15 (maximum with carry).
 
 ## Files
 
-- `fourbitadder.v` — RTL design module
+- `four_bit_adder.v` — RTL design module
 - `testbench.v` — Testbench with 5 test cases
 
 ---
