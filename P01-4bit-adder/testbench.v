@@ -1,4 +1,4 @@
-module testfourbitAdder;
+module test_four_bit_adder;
   reg [3:0]x;
   reg [3:0]y;
   reg carryin;
@@ -6,12 +6,12 @@ module testfourbitAdder;
   wire carryout;
 
 
-fourbitAdder a0 ( .x(x), .y(y), .sum(sum), .carryin(carryin), .carryout(carryout));
+four_bit_Adder a0 ( .x(x), .y(y), .sum(sum), .carryin(carryin), .carryout(carryout));
 
 initial
   begin 
-    $dumpfile("fourbitAdder.vcd");
-    $dumpvars(0, testfourbitAdder);
+    $dumpfile("four_bit_adder.vcd");
+    $dumpvars(0, test_four_bit_adder);
     carryin=0;
     x=4;
     y=3;
