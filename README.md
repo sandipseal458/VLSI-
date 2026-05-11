@@ -22,6 +22,7 @@ documented with simulation output and waveform screenshots.
 | # | Project | Skill | Status |
 |---|---------|-------|--------|
 | P01 | [4-bit-Adder](./P01-4bit-adder/) | Verilog Basics | ✅ Complete |
+| P02 | [4-bit-Mux-Demux](./P01-4bit-mux-demux/) | Verilog Basics | ✅ Complete |
 
 *More projects will be added as I keep learning.*
 
