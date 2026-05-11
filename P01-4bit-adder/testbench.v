@@ -6,7 +6,7 @@ module test_four_bit_adder;
   wire carryout;
 
 
-four_bit_Adder a0 ( .x(x), .y(y), .sum(sum), .carryin(carryin), .carryout(carryout));
+four_bit_adder a0 ( .x(x), .y(y), .sum(sum), .carryin(carryin), .carryout(carryout));
 
 initial
   begin 
@@ -16,10 +16,13 @@ initial
     x=4;
     y=3;
     $monitor ("x=0x%0h y=0x%0h carryin=0x%0h carryout=0x%0h sum=0x%0h", x, y, carryin, carryout, sum);
-#5  x=7;
+#5  carryin=1;
+    x=6;
     y=8;
-#5 x=15;
-    y=1;
+#5  x=15;
+    y=0;
+#5  x=15;
+    y=15;
 #5;
   end
 endmodule
