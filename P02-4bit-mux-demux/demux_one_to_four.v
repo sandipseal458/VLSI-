@@ -13,6 +13,13 @@ module one_to_four_demux(x, sel, out0, out1, out2, out3);
          2'b01:  out1 = x;
          2'b10:  out2 = x;
          2'b11:  out3 = x;
+      default: 
+        begin
+                 out0 = 4'b0000;
+                 out1 = 4'b0000;
+                 out2 = 4'b0000;
+                 out3 = 4'b0000;
+        end
       endcase
     end   
 endmodule
