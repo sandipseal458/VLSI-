@@ -13,6 +13,7 @@ module four_to_one_mux(x, y, z, w, sel, out);
          2'b01:  out = y;
          2'b10:  out = z;
          2'b11:  out = w;
+      default: out = 4'b0000;
       endcase
     end   
 endmodule
