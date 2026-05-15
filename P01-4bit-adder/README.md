@@ -63,7 +63,7 @@ cases of 0+0 (minimum) and 15+15 (maximum with carry).
 
 ## Test Cases
 
-| x (Decimal) | y (Decimal) | carryin | Binary x | Binary y | Expected Sum | Expected Cout |
+| x (Decimal) | y (Decimal) | carryin | Binary x | Binary y | Expected Sum | carryout |
 |-------------|-------------|-----|----------|----------|--------------|---------------|
 | 4           | 3           | 0   | 0100     | 0011     | 0111 (7)     | 0             |
 | 6           | 8           | 1   | 0110     | 1000     | 1111 (15)    | 0             |
