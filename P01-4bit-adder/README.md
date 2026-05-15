@@ -16,6 +16,25 @@ is set to 1, indicating overflow into a fifth bit.
 
 ---
 
+## Block Diagram
+
+### 4-Bit Ripple Carry Adder
+
+```text
+       A3 B3       A2 B2       A1 B1       A0 B0
+       |  |        |  |        |  |        |  |
+       V  V        V  V        V  V        V  V
+    +-------+   +-------+   +-------+   +-------+
+Cout|       |   |       |   |       |   |       |
+<---|  FA3  |<--|  FA2  |<--|  FA1  |<--|  FA0  |<--- Cin
+    |       | C3|       | C2|       | C1|       |
+    +-------+   +-------+   +-------+   +-------+
+        |           |           |           |
+        V           V           V           V
+        S3          S2          S1          S0
+```
+---
+
 ## How It Works
 
 The design uses a single behavioral `always @(*)` block,
@@ -39,6 +58,31 @@ cases of 0+0 (minimum) and 15+15 (maximum with carry).
 ## EPWave Waveform
 
 ![EPWave Waveform](epwave_waveform.png)
+
+---
+
+## Test Cases
+
+| A (Decimal) | B (Decimal) | Cin | Binary A | Binary B | Expected Sum | Expected Cout |
+|-------------|-------------|-----|----------|----------|--------------|---------------|
+| 4           | 3           | 0   | 0100     | 0011     | 0111 (7)     | 0             |
+| 6           | 8           | 1   | 0110     | 1000     | 1111 (15)    | 0             |
+| 15          | 0           | 1   | 1111     | 0000     | 0000 (0)     | 1             |
+| 15          | 15          | 1   | 1111     | 1111     | 1111 (15)    | 1             |
+
+### Detailed Logic Breakdown
+
+1. Case (4 + 3), Cin = 0:
+The binary addition is 0100 + 0011. There are no carries generated between stages. The result is 0111, which equals 7 in decimal.
+
+2. Case (6 + 8), Cin = 1:
+The binary addition is 0110 + 1000 + 1. The carry-in at the first stage results in a sum of 15 (1111). No final carry-out is generated.
+
+3. Case (15 + 0), Cin = 1:
+The binary addition is 1111 + 0000 + 1. The carry-in ripples through every single full adder stage, effectively acting as 15 + 1. This results in a sum of 0000 and sets the Cout bit to 1.
+
+4. Case (15 + 15), Cin = 1:
+This is the maximum possible value for a 4-bit adder with Cin. Mathematically, 15 + 15 + 1 = 31. In 4-bit binary, 31 is represented as a Cout of 1 and a Sum of 1111 (16 + 15).
 
 ---
 
