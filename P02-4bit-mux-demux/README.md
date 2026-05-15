@@ -42,6 +42,29 @@ sel = 11 → out3 = x, out0/out1/out2 = 0
 
 ---
 
+## Block Diagram
+
+```
+         ┌─────────────┐
+  x ────►│             │
+  y ────►│  4-to-1 MUX │────► out
+  z ────►│             │
+  w ────►└─────────────┘
+             ▲
+            sel [1:0]
+
+
+         ┌──────────────┐
+         │              ├────► out0
+  x ────►│  1-to-4 DEMUX├────► out1
+         │              ├────► out2
+         └──────────────┘────► out3
+             ▲
+            sel [1:0]
+```
+
+---
+
 ## How It Works
 
 Both designs use a `case` statement inside an `always @(*)`
@@ -61,15 +84,57 @@ latch inference during synthesis on some tools.
 
 ## Simulation Output
 
+### MUX
+
 ![MUX Simulation Output](simulation_output_mux.png)
+
+### DEMUX
+
 ![DEMUX Simulation Output](simulation_output_demux.png)
 
 ---
 
 ## EPWave Waveform
 
+### MUX
+
 ![MUX Waveform](epwave_waveform_mux.png)
+
+### DEMUX
+
 ![DEMUX Waveform](epwave_waveform_demux.png)
+
+---
+
+## Test Cases
+
+### MUX Test Cases
+
+| sel | x    | y    | z    | w    | Expected Output |
+|-----|------|------|------|------|-----------------|
+| 00  | 0101 | 1010 | 1100 | 0011 | 0101            |
+| 01  | 0101 | 1010 | 1100 | 0011 | 1010            |
+| 10  | 0101 | 1010 | 1100 | 0011 | 1100            |
+| 11  | 0101 | 1010 | 1100 | 0011 | 0011            |
+
+Each input is assigned a unique bit pattern so that if
+`sel` accidentally routes the wrong input, the output
+mismatch is immediately visible.
+
+### DEMUX Test Cases
+
+| x    | sel | out0 | out1 | out2 | out3 |
+|------|-----|------|------|------|------|
+| 1111 | 00  | 1111 | 0000 | 0000 | 0000 |
+| 1111 | 01  | 0000 | 1111 | 0000 | 0000 |
+| 1111 | 10  | 0000 | 0000 | 1111 | 0000 |
+| 1111 | 11  | 0000 | 0000 | 0000 | 1111 |
+| 0000 | 00  | 0000 | 0000 | 0000 | 0000 |
+| 1010 | 10  | 0000 | 0000 | 1010 | 0000 |
+
+The DEMUX testbench uses `$monitor` which prints
+automatically whenever any signal changes — this captures
+all transitions without manual `$display` calls at each step.
 
 ---
 
