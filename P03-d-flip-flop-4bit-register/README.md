@@ -55,7 +55,7 @@ reset──►│                  │
 
 ### EPWave Waveform
 
-![D Flip-Flop Waveform](epwave_flip_flop.png)
+![D Flip-Flop Waveform](epwave_waveform_flip_flop.png)
 
 ### Test Cases 
 
