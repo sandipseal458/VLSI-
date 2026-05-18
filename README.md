@@ -23,6 +23,7 @@ documented with simulation output and waveform screenshots.
 |---|---------|-------|--------|
 | P01 | [4-bit-Adder](./P01-4bit-adder/) | Verilog Basics | ✅ Complete |
 | P02 | [4-bit-Mux-Demux](./P02-4bit-mux-demux/) | Verilog Basics | ✅ Complete |
+| P03 | [D-flip-flop-4-bit-Register](./P03-d-flip-flop-4bit-register/) | Verilog Basics | ✅ Complete |
 
 *More projects will be added as I keep learning.*
 
