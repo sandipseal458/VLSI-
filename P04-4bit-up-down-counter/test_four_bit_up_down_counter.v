@@ -33,7 +33,17 @@ module test_four_bit_up_down_counter;
         #40;
         #10 reset = 1;
         #10 reset = 0;
-        #20 $finish;
+      // Test overflow 
+        #10 reset = 1; 
+        #10 reset = 0;
+            up_down = 1;
+       #150;  
+
+      // Test underflow 
+        #10 reset = 1;
+        #10 reset = 0;
+            up_down = 0;
+        #50 $finish;
     end
 endmodule
       
