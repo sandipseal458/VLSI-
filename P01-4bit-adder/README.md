@@ -88,8 +88,12 @@ This is the maximum possible value for a 4-bit adder with Cin. Mathematically, 1
 
 ## Files
 
-- `four_bit_adder.v` — RTL design module
-- `testbench.v` — Testbench with 4 test cases
+| File | Description |
+|------|-------------|
+| `four_bit_adder.v` | RTL design module |
+| `testbench.v` | Testbench with 4 test cases |
+| `simulation_output.png` | Console simulation output for adder test |
+| `epwave_waveform.png` | EPWave waveform for adder test |
 
 ---
 

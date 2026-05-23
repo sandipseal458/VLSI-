@@ -139,10 +139,14 @@ four consecutive 1s to verify the all-ones boundary condition.
 
 | File | Description |
 |------|-------------|
-| `d_flip_flop_v` | RTL design — 1-bit D flip-flop with synchronous reset |
-| `test_d_flip_flop_v` | Testbench for D flip-flop |
-| `four_bit_shift_register_v` | RTL design — 4-bit SIPO shift register |
-| `test_four_bit_shift_register_v` | Testbench for SIPO shift register |
+| `d_flip_flop.v` | RTL design — 1-bit D flip-flop with synchronous reset |
+| `test_d_flip_flop.v` | Testbench for D flip-flop |
+| `four_bit_shift_register.v` | RTL design — 4-bit SIPO shift register |
+| `test_four_bit_shift_register.v` | Testbench for SIPO shift register |
+| `simulation_output_flip_flop.png` | Console simulation output for D flip-flop test |
+| `simulation_output_register.png` | Console simulation output for SIPO shift register test |
+| `epwave_waveform_flip_flop.png` | EPWave waveform for D flip-flop test |
+| `epwave_waveform_register.png` | EPWave waveform for SIPO shift register test |
 
 ---
 

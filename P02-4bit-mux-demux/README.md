@@ -146,6 +146,10 @@ all transitions without manual `$display` calls at each step.
 | `testbench_mux_four_to_one.v` | Testbench for MUX |
 | `demux_one_to_four.v` | RTL design — 1-to-4 DEMUX |
 | `testbench_demux_one_to_four.v` | Testbench for DEMUX |
+| `simulation_output_mux.png` | Console simulation output for MUX test |
+| `simulation_output_demux.png` | Console simulation output for DEMUX test |
+| `epwave_waveform_mux.png` | EPWave waveform for MUX test |
+| `epwave_waveform_demux.png` | EPWave waveform for DEMUX test |
 
 ---
 
