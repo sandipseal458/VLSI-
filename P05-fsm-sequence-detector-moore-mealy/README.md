@@ -213,39 +213,39 @@ be compared directly.
 
 ### Overlap Testbench Coverage
 
-**Test 1 — Correct detection of `1011`**
+**Test 1 — Correct detection of `1011`**  
 The testbench applies the target pattern and verifies that both Moore
 and Mealy outputs assert on the expected clock cycle.
 
-**Test 2 — Overlapping sequence detection**
+**Test 2 — Overlapping sequence detection**  
 The input stream contains overlapping occurrences of `1011`.
 The overlap detector must produce two detections while preserving the
 shared bits between patterns.
 
-**Test 3 — False pattern rejection**
+**Test 3 — False pattern rejection**  
 The testbench includes partial and incorrect sequences to confirm that
 no output is asserted until the full `1011` pattern is seen.
 
-**Test 4 — Reset during partial match**
+**Test 4 — Reset during partial match**  
 Reset is asserted while the FSM is in a partial-match state. The test
 verifies the detector returns to idle and does not produce a false
 output.
 
 ### Non-Overlap Testbench Coverage
 
-**Test 1 — Correct detection of `1011`**
+**Test 1 — Correct detection of `1011`**  
 The testbench applies the exact sequence and confirms a single detection
 on the final bit.
 
-**Test 2 — Non-overlap behavior**
+**Test 2 — Non-overlap behavior**  
 This test verifies that after one detection the FSM restarts from idle
 and does not reuse trailing bits from the previous pattern.
 
-**Test 3 — False pattern rejection**
+**Test 3 — False pattern rejection**  
 Partial and incorrect inputs confirm the non-overlap detector remains
 quiet until the full pattern is completed.
 
-**Test 4 — Reset during partial match**
+**Test 4 — Reset during partial match**  
 Reset clears any partial progress and ensures the FSM waits for a new
 `1011` sequence.
 
