@@ -170,4 +170,4 @@ inside other conditions it silently fails in cases you did not anticipate.
 I also learned that the order of control signal checking in RTL directly
 reflects the priority of those signals in hardware. This same priority
 thinking applies to every sequential circuit including the pipeline
-control unit of the RISC-V processor built in Year 2.
+control unit of the RISC-V processor.
