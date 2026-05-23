@@ -93,13 +93,13 @@ reaching the target count value.
 
 ## Simulation Output
 
-![Counter Simulation Output](simulation_counter.png)
+![Counter Simulation Output](simulation_output.png)
 
 ---
 
 ## EPWave Waveform
 
-![Counter Waveform](epwave_counter.png)
+![Counter Waveform](epwave_waveform.png)
 
 ---
 
