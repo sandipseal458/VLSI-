@@ -152,6 +152,14 @@ arithmetic limit correctly without latching or undefined behavior.
 
 ---
 
+## Tools Used
+
+- EDA Playground — online Verilog simulator
+- Cadence Xcelium — simulation engine
+- EPWave — waveform viewer
+
+---
+
 ## What I Learned
 
 Before this project I knew that reset clears a register but I did not
@@ -163,11 +171,3 @@ I also learned that the order of control signal checking in RTL directly
 reflects the priority of those signals in hardware. This same priority
 thinking applies to every sequential circuit including the pipeline
 control unit of the RISC-V processor built in Year 2.
-
----
-
-## Tools Used
-
-- EDA Playground — online Verilog simulator
-- Cadence Xcelium — simulation engine
-- EPWave — waveform viewer
