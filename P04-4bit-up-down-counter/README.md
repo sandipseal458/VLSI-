@@ -105,36 +105,36 @@ reaching the target count value.
 
 ## Test Cases Covered
 
-**Test 1 — Synchronous reset at startup**
+**Test 1 — Synchronous reset at startup**  
 Reset is asserted for 2 clock cycles at the beginning. Output holds
 at 0000 throughout the reset period, confirming the synchronous
 behavior — the clear happens on the clock edge, not immediately.
 
-**Test 2 — Count up with enable active**
+**Test 2 — Count up with enable active**  
 After reset is released, the counter increments on every clock edge.
 Output follows the sequence 0001, 0010, 0011, 0100, 0101 confirming
 correct up-counting behavior with enable active.
 
-**Test 3 — Enable disabled mid-count**
+**Test 3 — Enable disabled mid-count**  
 Enable is deasserted while the counter is running. The output freezes
 at its current value for the duration that enable is low, confirming
 that the counter correctly holds state when not enabled.
 
-**Test 4 — Resume counting after re-enable**
+**Test 4 — Resume counting after re-enable**  
 Enable is reasserted and the counter continues from exactly where
 it paused, confirming no state loss during the disable period.
 
-**Test 5 — Mid-operation synchronous reset**
+**Test 5 — Mid-operation synchronous reset**  
 Reset is asserted while the counter is actively counting. The output
 clears to 0000 on the next clock edge, confirming reset correctly
 overrides both enable and direction signals regardless of their state.
 
-**Test 6 — Count down after direction switch**
+**Test 6 — Count down after direction switch**  
 up_down is set to 0 and the counter decrements on every clock edge,
 confirming the direction control works correctly and the counter
 handles subtraction cleanly.
 
-**Test 7 — Overflow and underflow (recommended addition)**
+**Test 7 — Overflow and underflow (recommended addition)**  
 Count up from 1111 wraps to 0000. Count down from 0000 wraps to 1111.
 These boundary conditions confirm the counter handles the 4-bit
 arithmetic limit correctly without latching or undefined behavior.
