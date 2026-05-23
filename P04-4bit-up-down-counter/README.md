@@ -147,8 +147,6 @@ arithmetic limit correctly without latching or undefined behavior.
 |------|-------------|
 | `four_bit_up_down_counter.v` | RTL design — 4-bit up/down counter |
 | `test_four_bit_up_down_counter.v` | Testbench with 6 test scenarios |
-| `simulation_output.png` | Console simulation output |
-| `epwave_waveform.png` | EPWave waveform screenshot |
 
 ---
 
