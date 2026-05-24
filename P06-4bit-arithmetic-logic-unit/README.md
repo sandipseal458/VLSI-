@@ -26,14 +26,16 @@ in a simple processor datapath.
 
 ## Supported Operations
 
-| `000` | `ADD` | A + B (unsigned add with carry detection) |
-| `001` | `SUB` | A - B (unsigned subtract with borrow and signed overflow detection) |
-| `010` | `AND` | Bitwise AND |
-| `011` | `OR` | Bitwise OR |
-| `100` | `XOR` | Bitwise XOR |
-| `101` | `NOT` | Bitwise NOT of A (B is ignored) |
-| `110` | `SLL` | Shift left logical A by one bit |
-| `111` | `SRL` | Shift right logical A by one bit |
+| Opcode | Operation | Description |
+|--------|-----------|--------------------|
+| `000` | `ADD` | A + B (unsigned add with carry detection) |  
+| `001` | `SUB` | A - B (unsigned subtract with borrow and signed overflow detection) |  
+| `010` | `AND` | Bitwise AND |  
+| `011` | `OR` | Bitwise OR |  
+| `100` | `XOR` | Bitwise XOR |  
+| `101` | `NOT` | Bitwise NOT of A (B is ignored) |  
+| `110` | `SLL` | Shift left logical A by one bit |  
+| `111` | `SRL` | Shift right logical A by one bit |  
 
 ---
 
@@ -66,19 +68,28 @@ functions are available simultaneously and the opcode simply selects
 which function result is forwarded.
 
 ```
-A[3:0]         B[3:0]
-  │             │
-  ├─ ADD ─┐      ├─ SUB ─┐      ┌────────────┐
-  │      │      │      │      │            │
-  │      ├─ AND  │      ├─ OR   │            │
-  │      │      │      │      ├─ XOR        │
-  │      ├─ NOT  │      ├─ SLL  │            │
-  │      │      │      │      ├─ SRL        │
-  │      │      │      │      │            │
-  └──────┴──────┴──────┴──────┴─> 8-to-1 MUX ─> result[3:0]
-                                   │
-                            zflag, nflag,
-                            cflag, oflag
+         A[3:0]              B[3:0]
+            │                   │
+    ┌───────┼───────────────────┤
+    │       │                   │
+  [ADD]   [SUB]  [AND] [OR] [XOR] [NOT] [SLL] [SRL]
+    │       │      │    │    │     │     │     │
+    └───────┴──────┴────┴────┴─────┴─────┴─────┘
+                         │
+               ┌──────────────────┐
+               │   8-to-1 MUX     │
+               │  (case statement)│
+               │  selected by     │
+               │  opcode [2:0]    │
+               └────────┬─────────┘
+                        │
+                   result [3:0]
+                        │
+         ┌──────────────┼──────────────┐
+         │              │              │
+      zflag          nflag      cflag/oflag
+  (result==0)    (result[3])  (arithmetic only)
+
 ```
 
 ---
