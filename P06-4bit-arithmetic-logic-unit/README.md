@@ -172,6 +172,8 @@ a single 1 bit completely out to zero.
 |------|-------------|
 | `four_bit_arithmetic_logic_unit.v` | ALU RTL design |
 | `test_four_bit_arithmetic_logic_unit.v` | Testbench covering all operations |
+| `simulation_output.png` | Console simulation output |
+| `epwave_waveform.png` | EPWave waveform display |
 
 ---
 
