@@ -34,7 +34,10 @@ documented with simulation output and waveform screenshots.
 
 ## Tools Used
 
-- EDA Playground with Cadence Xcelium
+- EDA Playground — online Verilog simulator
+- Cadence Xcelium — simulation engine
+- EPWave — waveform viewer
+
 
 
 ## Contact
