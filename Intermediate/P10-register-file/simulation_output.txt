@@ -1,0 +1,22 @@
+VCD info: dumpfile tb_register.vcd opened for output.
+
+=========================================================
+ 32 x 32 register file testbench
+=========================================================
+[53000] TB: PASS - T1 reset cleared all 32 words
+[53000] TB: T2 - write and read back all 32 words
+[722000] TB: T2 done (0 errors so far)
+[722000] TB: T3 - dual-port read of two different words
+[723000] TB: PASS - T3 port1 and port2 return their own addresses
+[723000] TB: T4 - write attempt with wt_enable low
+[741000] TB: PASS - T4 word 7 unchanged while wt_enable low
+[741000] TB: T5 - both read ports on the same address
+[742000] TB: PASS - T5 port1 and port2 agree on address 11
+[742000] TB: T6 - read-after-write on address 0
+[761000] TB: PASS - T6 new value visible right after the write
+
+=========================================================
+ RESULT: PASSED  (6 checks)
+=========================================================
+
+tb_register.v:197: $finish called at 761000 (1ps)

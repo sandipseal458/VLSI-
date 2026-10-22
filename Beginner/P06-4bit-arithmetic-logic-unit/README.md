@@ -1,129 +1,116 @@
 # P06 — 4-Bit Arithmetic Logic Unit (ALU)
 
-A fully combinational 4-bit ALU implementing eight arithmetic and logic
-operations with four status flags. This design is the core of the
-processor execute stage and demonstrates how a single ALU block can
-support both unsigned and signed arithmetic while producing the
-control signals needed for conditional branching.
+Eight operations — four arithmetic, four logic — selected by a 3-bit opcode,
+producing a 4-bit result plus the four status flags a processor's decision
+logic needs: zero, negative, carry, overflow. This is the execute stage of
+a CPU in miniature, and it is the project where I understood why a processor
+needs *two* different notions of "the arithmetic went wrong".
+
+I built it as the capstone of the beginner set: it uses the adder from P01,
+the case/mux style from P02, and it feeds directly into the kind of
+conditional logic a RISC-V core performs on every branch.
 
 ---
 
-## Overview
-
-This ALU accepts two 4-bit operands, `A` and `B`, plus a 3-bit opcode.
-It computes all supported operations in parallel and selects the final
-result using combinational multiplexing. The design also produces:
-
-- `zflag` — indicates a zero result
-- `nflag` — indicates a negative result in two's complement
-- `cflag` — indicates carry-out or borrow
-- `oflag` — indicates signed overflow
-
-The ALU is useful for both unsigned arithmetic and signed decision logic
-in a simple processor datapath.
-
----
-
-## Supported Operations
+## Operations
 
 | Opcode | Operation | Description |
-|--------|-----------|--------------------|
-| `000` | `ADD` | A + B (unsigned add with carry detection) |  
-| `001` | `SUB` | A - B (unsigned subtract with borrow and signed overflow detection) |  
-| `010` | `AND` | Bitwise AND |  
-| `011` | `OR` | Bitwise OR |  
-| `100` | `XOR` | Bitwise XOR |  
-| `101` | `NOT` | Bitwise NOT of A (B is ignored) |  
-| `110` | `SLL` | Shift left logical A by one bit |  
-| `111` | `SRL` | Shift right logical A by one bit |  
+|--------|-----------|-------------|
+| `000` | `ADD` | A + B, unsigned carry detection |
+| `001` | `SUB` | A − B, borrow + signed overflow detection |
+| `010` | `AND` | bitwise AND |
+| `011` | `OR` | bitwise OR |
+| `100` | `XOR` | bitwise XOR |
+| `101` | `NOT` | bitwise NOT of A (B ignored) |
+| `110` | `SLL` | logical left shift of A by one |
+| `111` | `SRL` | logical right shift of A by one |
 
----
-
-## Interface Signals
+## Interface
 
 | Signal | Direction | Width | Description |
 |--------|-----------|-------|-------------|
-| `A` | Input | 4 bits | First operand |
-| `B` | Input | 4 bits | Second operand |
-| `opcode` | Input | 3 bits | Selects the operation |
-| `result` | Output | 4 bits | ALU output |
-| `zflag` | Output | 1 bit | High when result is zero |
-| `nflag` | Output | 1 bit | High when result is negative (`result[3]`) |
-| `cflag` | Output | 1 bit | Carry-out or borrow indication |
-| `oflag` | Output | 1 bit | Signed overflow indication |
+| `A`, `B` | in | 4 | operands |
+| `opcode` | in | 3 | selects the operation |
+| `result` | out | 4 | operation output |
+| `zflag` | out | 1 | result is zero |
+| `nflag` | out | 1 | result is negative (two's complement) |
+| `cflag` | out | 1 | unsigned carry-out / borrow |
+| `oflag` | out | 1 | signed overflow |
 
 ---
 
 ## Architecture
 
-The ALU is implemented as purely combinational logic:
+Everything is computed in parallel, and the opcode merely selects which
+result reaches the output — the same structure as real ALU hardware, where
+the arithmetic units are all live at once and a mux picks the winner:
 
-1. Compute each operation result independently.
-2. Generate flags based on the selected result and arithmetic inputs.
-3. Use a `case` statement to choose the final `result` according to
-   `opcode`.
-
-This structure matches real hardware ALU design, where all operand
-functions are available simultaneously and the opcode simply selects
-which function result is forwarded.
-
-```
-         A[3:0]              B[3:0]
-            │                   │
-    ┌───────┼───────────────────┤
-    │       │                   │
-  [ADD]   [SUB]  [AND] [OR] [XOR] [NOT] [SLL] [SRL]
-    │       │      │    │    │     │     │     │
-    └───────┴──────┴────┴────┴─────┴─────┴─────┘
+```text
+     A[3:0]              B[3:0]
+        │                   │
+  [ADD] [SUB] [AND] [OR] [XOR] [NOT] [SLL] [SRL]
+        └───────┴────┴────┴─────┴─────┴─────┘
                          │
-               ┌──────────────────┐
-               │   8-to-1 MUX     │
-               │  (case statement)│
-               │  selected by     │
-               │  opcode [2:0]    │
-               └────────┬─────────┘
-                        │
-                   result [3:0]
-                        │
-         ┌──────────────┼──────────────┐
-         │              │              │
-      zflag          nflag      cflag/oflag
-  (result==0)    (result[3])  (arithmetic only)
-
+              ┌──────────────────┐
+              │  8-to-1 selector │   ← case (opcode)
+              └────────┬─────────┘
+                       │
+                  result[3:0]
+                       │
+        ┌──────────────┼──────────────┐
+     zflag          nflag      cflag / oflag
+  (result == 0)  (result[3])  (arithmetic only)
 ```
+
+The implementation is one combinational block with every operation
+evaluated and a `case` choosing the result. The discipline that matters
+here: **every branch assigns every output**. An output that is only assigned
+in *some* branches infers a latch — a bit of unwanted state inside what
+should be pure combinational logic. I keep `default` branches and assign
+flags from the *selected* result, not from whichever partial computation
+happened to run.
 
 ---
 
-## Status Flag Behavior
+## Status Flags
 
-- `zflag` is set when `result == 4'b0000`.
-- `nflag` is set when `result[3] == 1`, indicating a negative two's
-  complement result.
-- `cflag` is set for unsigned carry-out from addition or borrow from
-  subtraction.
-- `oflag` is set when signed arithmetic overflow occurs.
+- **`zflag`** — `result == 4'b0000`. Branch-if-zero lives or dies on this.
+- **`nflag`** — `result[3]`, the sign bit of a two's-complement number.
+- **`cflag`** — carry out of the adder, or borrow out of the subtractor.
+  This is the *unsigned* error signal: unsigned comparison and multi-word
+  arithmetic chain on it.
+- **`oflag`** — *signed* overflow: the answer does not fit in four signed
+  bits. A different question from carry, answered with different logic.
 
-### Signed Overflow Logic
+### Why carry and overflow are not the same thing
 
-Signed overflow is detected differently for addition and subtraction.
-For addition:
+This is the concept I had to sit with longest, and the one I would put at
+the top of an interview whiteboard:
 
-- overflow occurs when two positive operands produce a negative result
-- or two negative operands produce a positive result
-
-For subtraction:
-
-- overflow occurs when operands have different signs and the result
-  sign does not match the minuend's sign.
-
-Example formulas:
-
+```text
+  unsigned view:   15 + 1 = 16  → carry set, sum = 0000      (carry)
+  signed view:      7 + 8 = 15  → +7 + +8 should be +15, but
+                                  0111 + 1000 = 1111 = −1     (overflow)
 ```
-oflag_add = (~A[3] & ~B[3] & result[3])
-         | ( A[3] &  B[3] & ~result[3]);
+
+Carry asks *"did the bits spill out of the unsigned range?"* Overflow asks
+*"did the sign come out wrong?"* A CPU checks carry for unsigned
+comparisons and overflow for signed ones — and using the wrong flag is a
+real class of arithmetic bug.
+
+The detection logic follows from that:
+
+```verilog
+oflag_add = (~A[3] & ~B[3] & result[3])      // + + → −
+         | ( A[3] &  B[3] & ~result[3]);     // − − → +
 
 oflag_sub = (A[3] ^ B[3]) & (A[3] ^ result[3]);
 ```
+
+For addition: overflow only happens when both operands share a sign and the
+result disagrees. For subtraction: when the operands have *different* signs
+and the result's sign does not match the minuend's.
+
 ---
 
 ## Simulation Output
@@ -140,40 +127,25 @@ oflag_sub = (A[3] ^ B[3]) & (A[3] ^ result[3]);
 
 ## Test Cases Covered
 
-The testbench covers 24 test cases — 3 cases per operation across
-all 8 operations. Each group of 3 cases is designed to test normal
-operation, a boundary or flag condition, and a case that exercises
-the negative flag specifically.
+24 vectors — three per operation across all eight operations. Within each
+trio the cases are chosen to hit a normal path, a boundary/flag condition,
+and something specific for the negative flag:
 
-**Addition tests** cover normal addition with no flags, positive overflow
-where two positive numbers produce a negative result in signed arithmetic,
-and negative overflow where two negative numbers exceed the minimum value.
+| Operation | The three cases |
+|-----------|-----------------|
+| ADD | plain add; positive overflow (+7 + +8 → negative result); two negatives overflowing |
+| SUB | plain sub; result negative → `nflag`; positive − negative → signed overflow |
+| AND | mixed bits; identical inputs forcing zero → `zflag`; result with MSB set → `nflag` |
+| OR | mixed bits; all-zero inputs → zero; complementary inputs → all ones → `nflag` |
+| XOR | mixed bits; identical inputs → zero (XOR's identity); inverted inputs → all ones |
+| NOT | positive → negative; `1111 → 0000` → `zflag`; `0000 → 1111` |
+| SLL | plain shift; shifted MSB lands in the sign position; all bits shifted out → zero |
+| SRL | plain shift; MSB was set (proving the shift is logical, not arithmetic); single 1 shifted out |
 
-**Subtraction tests** cover normal subtraction, subtraction that produces
-a negative result demonstrating the negative flag, and subtraction that
-causes signed overflow when a positive number subtracts a negative operand.
-
-**AND tests** cover mixed bit patterns, the zero result case that sets
-the zero flag, and identical operands that produce a negative result.
-
-**OR tests** cover mixed bit patterns, the all-zero input case that
-produces zero, and complementary inputs that produce all ones setting
-the negative flag.
-
-**XOR tests** cover mixed bit patterns, identical inputs where XOR
-produces zero confirming the zero flag, and inverted inputs that
-produce the all-ones negative result.
-
-**NOT tests** cover inverting a positive number to negative, inverting
-all ones to zero setting the zero flag, and inverting zero to all ones.
-
-**Shift Left tests** cover normal shifting, shifting a value whose
-MSB becomes 1 setting the negative flag, and shifting a value where
-all significant bits shift out leaving zero.
-
-**Shift Right tests** cover normal shifting, right-shifting a value
-with the MSB set demonstrating logical shift behavior, and shifting
-a single 1 bit completely out to zero.
+Two habits this table reflects: **every operation gets tested, not just
+ADD**, and **each test targets a flag**, because flags are what the rest of
+a processor actually consumes. Testing `ADD` for 20 vectors and `SRL` for
+none produces a confident-looking log that proves very little.
 
 ---
 
@@ -181,32 +153,10 @@ a single 1 bit completely out to zero.
 
 | File | Description |
 |------|-------------|
-| `four_bit_arithmetic_logic_unit.v` | ALU RTL design |
-| `test_four_bit_arithmetic_logic_unit.v` | Testbench covering all operations |
-| `simulation_output.png` | Console simulation output |
-| `epwave_waveform.png` | EPWave waveform display |
-
----
-
-## What I Learned
-
-This project reinforces two important RTL design principles:  
-
-- In a combinational ALU, every output must be assigned in every control
-  path to avoid unintended latches.
-- Flags such as zero, negative, carry, and overflow must be computed from
-  the final selected result and from the arithmetic operands, not from
-  intermediate partial results.  
-
-Building the ALU helps understand how arithmetic, logic, and condition
-flags are combined in a processor datapath — the exact same patterns are
-used in real CPU execute stages.
-  
-The overflow detection logic revealed that signed and unsigned arithmetic
-produce different notions of error — carry captures unsigned overflow
-while the dedicated overflow flag captures signed overflow. Understanding
-this distinction is essential for implementing signed comparisons and
-conditional branches in the RISC-V processor.
+| `four_bit_arithmetic_logic_unit.v` | ALU RTL |
+| `test_four_bit_arithmetic_logic_unit.v` | Testbench — 24 vectors, all operations |
+| `simulation_output.png` | Console output |
+| `epwave_waveform.png` | EPWave waveform |
 
 ---
 
@@ -215,3 +165,23 @@ conditional branches in the RISC-V processor.
 - EDA Playground — online Verilog simulator
 - Cadence Xcelium — simulation engine
 - EPWave — waveform viewer
+
+---
+
+## What I Learned
+
+- **Combinational blocks must assign every output on every path.** One
+  unassigned branch and synthesis hands you a latch you did not draw.
+- **Flags are computed from the final selected result**, from the operands
+  that produced it — never from an intermediate partial computation that
+  happens to sit earlier in the block.
+- **Carry and overflow answer different questions.** Unsigned range vs
+  signed range; one status bit for each; a CPU needs both to do correct
+  comparisons and branches.
+- **Test coverage should mirror the operation table.** If the opcode table
+  has eight rows, the test plan has eight sections — and each section
+  should provoke at least one flag, because that is the ALU's output to the
+  world.
+- **This is the block the whole processor is organised around.** Seeing the
+  mux-selects-a-function pattern here made the datapath diagrams in later
+  material stop looking like decoration.

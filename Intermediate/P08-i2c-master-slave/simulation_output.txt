@@ -1,0 +1,31 @@
+VCD info: dumpfile tb_i2c.vcd opened for output.
+
+=========================================================
+ I2C master / slave testbench
+=========================================================
+[95000] TB: T1 - write 0xA5 to slave 0x28
+[3555000] TB: slave latched 0xa5
+[3945000] TB: PASS - T1 slave latched exactly one byte
+[3945000] TB: PASS - T1 written data is 0xA5
+[3945000] TB: T2 - write 0x5A to slave 0x28
+[7355000] TB: slave latched 0x5a
+[7745000] TB: PASS - T2 slave latched exactly one byte
+[7745000] TB: PASS - T2 written data is 0x5A
+[7745000] TB: T3 - read from slave 0x28
+[11545000] TB: PASS - T3 master read back 0xC3
+[11545000] TB: T4 - write to address 0x29 (slave is 0x28)
+[15345000] TB: PASS - T4 slave ignored the data byte
+[15345000] TB: T5 - write 0x11 then read 0x22
+[18755000] TB: slave latched 0x11
+[19145000] TB: PASS - T5 first transaction wrote 0x11
+[22945000] TB: PASS - T5 second transaction read 0x22
+[22945000] TB: T6 - reset recovery
+[26505000] TB: slave latched 0x99
+[26895000] TB: PASS - T6 slave latched a byte after reset
+[26895000] TB: PASS - T6 written data is 0x99 after reset
+
+=========================================================
+ RESULT: PASSED  (10 checks)
+=========================================================
+
+tb_i2c.v:266: $finish called at 26895000 (1ps)

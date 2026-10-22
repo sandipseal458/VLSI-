@@ -1,93 +1,73 @@
 # P04 — 4-Bit Up/Down Counter with Enable and Synchronous Reset
 
-A sequential logic circuit that counts upward or downward on every
-rising clock edge. The design uses a synchronous active-high reset,
-an enable signal, and a direction control signal to decide whether
-the 4-bit output should increment, decrement, or hold its current value.
+A counter that increments or decrements on every rising clock edge, with an
+enable to freeze it and a synchronous reset to clear it. Small block, but it
+is the first place where I had to make *priority* explicit — three control
+signals that cannot all be obeyed at once, and one clear order in which they
+are obeyed.
+
+Counters are everywhere in hardware: timers, baud-rate dividers (the UART in
+P09 is literally a wrapped counter), address generators, FSM prescalers.
+Learning to debug one properly paid off in every later project.
 
 ---
 
-## What This Project Contains
+## Signals
 
-This project implements a 4-bit binary up/down counter in Verilog.
-A counter is one of the most common sequential circuits in digital
-systems. It is used in timers, frequency dividers, address generation,
-event counting, state machines, and many other hardware blocks.
-
-This counter has four control inputs that work together with a strict
-priority hierarchy. Reset has the highest priority and clears the counter
-to zero on the next rising clock edge regardless of all other signals.
-Enable has the second priority and allows counting only when high —
-when enable is low the counter holds its current value. Direction
-determines whether the counter increments or decrements when enabled.
-When all three conditions are normal (no reset, enabled, direction set),
-the counter either adds one or subtracts one on every rising clock edge.
-
----
+| Signal | Direction | Width | Description |
+|--------|-----------|-------|-------------|
+| `clk` | in | 1 | Clock |
+| `reset` | in | 1 | Synchronous, active-high — highest priority |
+| `ebl` | in | 1 | Enable — count only when high |
+| `up_down` | in | 1 | `1` = up, `0` = down |
+| `out` | out | 4 | Current count (0–15) |
 
 ## How It Works
 
-The design is written using `always @(posedge clk)`, which means all
-state changes happen only on the rising edge of the clock. This makes
-the circuit synchronous and predictable for simulation and synthesis.
-
-```
-Behaviour:
+```text
 On posedge clk:
-  if reset = 1       -> out = 0000      (clear counter)
+  if reset = 1            → out = 0000        (clear, highest priority)
   else if ebl = 1:
-       if up_down=1 -> out = out + 1   (count up)
-       if up_down=0 -> out = out - 1   (count down)
-  else              -> out holds value (no change) (Hold State)
+        if up_down = 1    → out = out + 1     (count up)
+        if up_down = 0    → out = out - 1     (count down)
+  else                    → out holds         (enable low = freeze)
 ```
 
-Because `out` is only 4 bits wide, the counter naturally wraps around.
-When counting up from `1111`, the next value becomes `0000`.
-When counting down from `0000`, the next value becomes `1111`.
-This is normal binary counter overflow and underflow behavior.
+**Priority is visible in the code.** `reset` is the outermost condition, so
+it overrides enable and direction no matter what they are doing. `ebl` sits
+inside it, so a frozen counter ignores `up_down` entirely. My first instinct
+was to write the three conditions as separate `if`s, and I stopped when I
+realised that would let a reset be *ignored* while an enable was low — the
+ordering in an if/else chain is literally the arbitration hardware you end
+up with. This same thinking applies to pipeline hazard logic later: whoever
+is checked first wins.
+
+**Everything stays on `posedge clk`.** One clocked block, one edge, no
+feedback loops. That makes the design's behaviour on the waveform a simple
+staircase you can read directly.
+
+**Wrap-around is a feature.** With four bits the arithmetic naturally
+mod-16: `1111 + 1 = 0000` going up, `0000 - 1 = 1111` going down. I treat
+that as intended behaviour rather than an overflow bug, because it is —
+hardware counters wrap, and the UART baud generator in P09 depends on a
+counter wrapping to zero to restart its period. What matters is that the
+wrap is *defined*, not that it is a special case someone has to handle.
 
 ---
 
 ## Block Diagram
 
+```text
+     +----------------------------------------------+
+     |          4-Bit Up/Down Counter               |
+ clk ───►│  posedge clk trigger                    │
+reset───►│  Priority 1 — clears to 0000            ├──► out [3:0]
+  ebl───►│  Priority 2 — allows counting           │
+up_dn───►│  Priority 3 — selects direction         │
+     |  range 0000 (0) .. 1111 (15)               |
+     |  1111 + 1 = 0000 (wraps)  0000 - 1 = 1111  |
+     +----------------------------------------------+
 ```
-         +----------------------------------------------+
-         |          4-Bit Up/Down Counter               |
-         |                                              |
- clk ───►│  posedge clk trigger                         │
-reset───►│  Priority 1 — clears to 0000                 ├──► out [3:0]
-  ebl───►│  Priority 2 — allows counting                │
-up_dn───►│  Priority 3 — selects direction              │
-         |  Count range: 0000 (0) to 1111 (15)          │
-         |  Overflow: 1111 + 1 = 0000 (wraps)           │
-         |  Underflow: 0000 - 1 = 1111 (wraps)          │
-         +----------------------------------------------+
-```
-
----
-
-## Input and Output Signals
-
-| Signal | Direction | Width | Description |
-|--------|-----------|-------|-------------|
-| `clk` | Input | 1 bit | Clock signal |
-| `reset` | Input | 1 bit | Synchronous active-high reset |
-| `ebl` | Input | 1 bit | Enable signal for counting |
-| `up_down` | Input | 1 bit | Direction control: `1` counts up, `0` counts down |
-| `out` | Output | 4 bits | Current counter value |
-
----
-
-## Overflow and Underflow Behaviour
-
-Because the output is a 4-bit register, it can only hold values from
-0 (4'b0000) to 15 (4'b1111). When the counter reaches 15 and counts
-up, Verilog's addition wraps around and the output becomes 0 on the
-next clock edge. When the counter is at 0 and counts down, subtraction
-wraps around to 15. This rollover behavior is intentional and is exactly
-how hardware counters work in real chips — the UART baud rate generator
-in Year 2 relies on this exact wrap behavior to reset itself after
-reaching the target count value.
 
 ---
 
@@ -105,39 +85,23 @@ reaching the target count value.
 
 ## Test Cases Covered
 
-**Test 1 — Synchronous reset at startup**  
-Reset is asserted for 2 clock cycles at the beginning. Output holds
-at 0000 throughout the reset period, confirming the synchronous
-behavior — the clear happens on the clock edge, not immediately.
+The testbench runs through the control signals one at a time so that when a
+value on the waveform surprises me, I know which input caused it:
 
-**Test 2 — Count up with enable active**  
-After reset is released, the counter increments on every clock edge.
-Output follows the sequence 0001, 0010, 0011, 0100, 0101 confirming
-correct up-counting behavior with enable active.
+| # | Scenario | What it proves |
+|---|----------|----------------|
+| 1 | Reset held at startup | `out` stays `0000` *during* reset and only changes on edges — synchronous behaviour |
+| 2 | Count up with enable high | `0001, 0010, 0011, 0100, 0101…` — increment works |
+| 3 | Enable dropped mid-count | output freezes exactly where it was |
+| 4 | Enable re-asserted | counting resumes from the frozen value — no state lost |
+| 5 | Reset mid-count | clears to `0000` on the next edge, beating enable and direction |
+| 6 | Direction switched to down | output decrements — the other arithmetic path |
+| 7 | Overflow and underflow | `1111 → 0000` counting up, `0000 → 1111` counting down |
 
-**Test 3 — Enable disabled mid-count**  
-Enable is deasserted while the counter is running. The output freezes
-at its current value for the duration that enable is low, confirming
-that the counter correctly holds state when not enabled.
-
-**Test 4 — Resume counting after re-enable**  
-Enable is reasserted and the counter continues from exactly where
-it paused, confirming no state loss during the disable period.
-
-**Test 5 — Mid-operation synchronous reset**  
-Reset is asserted while the counter is actively counting. The output
-clears to 0000 on the next clock edge, confirming reset correctly
-overrides both enable and direction signals regardless of their state.
-
-**Test 6 — Count down after direction switch**  
-up_down is set to 0 and the counter decrements on every clock edge,
-confirming the direction control works correctly and the counter
-handles subtraction cleanly.
-
-**Test 7 — Overflow and underflow (recommended addition)**  
-Count up from 1111 wraps to 0000. Count down from 0000 wraps to 1111.
-These boundary conditions confirm the counter handles the 4-bit
-arithmetic limit correctly without latching or undefined behavior.
+Test 3/4 (freeze and resume) and test 7 (wrap) are the two I care about
+most. Freezing is where a wrongly placed non-blocking assignment shows up,
+and wrapping is where you discover whether your arithmetic is defined at
+the edges or only in the comfortable middle of the range.
 
 ---
 
@@ -145,10 +109,10 @@ arithmetic limit correctly without latching or undefined behavior.
 
 | File | Description |
 |------|-------------|
-| `four_bit_up_down_counter.v` | RTL design — 4-bit up/down counter |
-| `test_four_bit_up_down_counter.v` | Testbench with 6 test scenarios |
-| `simulation_output.png` | Console simulation output for counter test |
-| `epwave_waveform.png` | EPWave waveform for counter test |
+| `four_bit_up_down_counter.v` | RTL — 4-bit up/down counter |
+| `test_four_bit_up_down_counter.v` | Testbench covering the seven scenarios |
+| `simulation_output.png` | Console output from the simulation |
+| `epwave_waveform.png` | EPWave waveform of the test |
 
 ---
 
@@ -162,12 +126,16 @@ arithmetic limit correctly without latching or undefined behavior.
 
 ## What I Learned
 
-Before this project I knew that reset clears a register but I did not
-think carefully about where reset belongs in the if-else structure.
-I learned that reset must be the outermost condition so that it acts
-as a global override with the highest priority — if reset is buried
-inside other conditions it silently fails in cases you did not anticipate.  
-I also learned that the order of control signal checking in RTL directly
-reflects the priority of those signals in hardware. This same priority
-thinking applies to every sequential circuit including the pipeline
-control unit of the RISC-V processor.
+- **Reset belongs on the outside of the if/else chain.** Buried inside
+  other conditions it silently fails in exactly the case you did not think
+  of. Outermost = highest priority = what hardware will implement.
+- **The order of checks in RTL *is* the arbitration logic.** Once I saw
+  that, priority encoding stopped being a separate topic to learn — it was
+  already in my code.
+- **Define your boundary behaviour on purpose.** Wrap-around is correct for
+  this counter and incorrect for a saturating counter; deciding which one
+  you want before writing the `+` saves an argument in review later.
+- **Test control signals individually.** Enabling, disabling and resetting
+  in one long sequence mixes causes; the waveform becomes hard to read and
+  a failure becomes hard to attribute. One control change at a time, and
+  the trace explains itself.
