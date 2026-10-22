@@ -13,7 +13,7 @@ documented with simulation output and waveform screenshots.
 - **Name:** Sandip Seal 
 - **College:** NIT Durgapur
 - **Branch:** Electronics & Communication Engineering
-- **Year:** 1st Year
+- **Year:** 2nd Year
 
 ---
 
