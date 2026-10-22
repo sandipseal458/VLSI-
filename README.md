@@ -35,7 +35,6 @@ VLSI-/
 │   ├── P05-fsm-sequence-detector-moore-mealy/
 │   └── P06-4bit-arithmetic-logic-unit/
 ├── Intermediate/
-│   ├── README.md          (one write-up for all four projects)
 │   ├── P07-spi-master-slave/
 │   ├── P08-i2c-master-slave/
 │   ├── P09-uart-transceiver/
@@ -61,10 +60,10 @@ VLSI-/
 | P04 | [4-bit-Up-Down-Counter](./Beginner/P04-4bit-up-down-counter/) | Beginner | Sequential Logic | ✅ Complete |
 | P05 | [FSM Sequence Detector](./Beginner/P05-fsm-sequence-detector-moore-mealy/) | Beginner | Finite State Machines (FSM) | ✅ Complete |
 | P06 | [4-bit Arithmetic Logic Unit (ALU)](./Beginner/P06-4bit-arithmetic-logic-unit/) | Beginner | Combinational Logic / ALU Design | ✅ Complete |
-| P07 | [SPI Master & Slave](./Intermediate/README.md#p07--spi-master--slave) | Intermediate | Serial Protocol (SPI), Full-Duplex | ✅ Complete |
-| P08 | [I2C Master & Slave](./Intermediate/README.md#p08--i2c-master--slave) | Intermediate | Serial Protocol (I²C), Open-Drain Bus | ✅ Complete |
-| P09 | [UART Transceiver](./Intermediate/README.md#p09--uart-transceiver) | Intermediate | Serial Protocol (UART), Baud Timing | ✅ Complete |
-| P10 | [32 × 32 Register File](./Intermediate/README.md#p10--32--32-register-file) | Intermediate | Datapath / Processor Building Block | ✅ Complete |
+| P07 | [SPI Master & Slave](./Intermediate/P07-spi-master-slave/) | Intermediate | Serial Protocol (SPI), Full-Duplex | ✅ Complete |
+| P08 | [I2C Master & Slave](./Intermediate/P08-i2c-master-slave/) | Intermediate | Serial Protocol (I²C), Open-Drain Bus | ✅ Complete |
+| P09 | [UART Transceiver](./Intermediate/P09-uart-transceiver/) | Intermediate | Serial Protocol (UART), Baud Timing | ✅ Complete |
+| P10 | [32 × 32 Register File](./Intermediate/P10-register-file/) | Intermediate | Datapath / Processor Building Block | ✅ Complete |
 
 *More projects will be added as I keep learning.*
 
