@@ -17,16 +17,33 @@ documented with simulation output and waveform screenshots.
 
 ---
 
+## Repository Structure
+
+Projects are organised by difficulty level:
+
+```
+VLSI-/
+├── Beginner/
+│   ├── P01-4bit-adder/
+│   ├── P02-4bit-mux-demux/
+│   ├── P03-d-flip-flop-4bit-register/
+│   ├── P04-4bit-up-down-counter/
+│   ├── P05-fsm-sequence-detector-moore-mealy/
+│   └── P06-4bit-arithmetic-logic-unit/
+├── Intermediate/
+└── Advanced/
+```
+
 ## Project List
 
-| # | Project | Skill | Status |
-|---|---------|-------|--------|
-| P01 | [4-bit-Adder](./P01-4bit-adder/) | Verilog Basics | ✅ Complete |
-| P02 | [4-bit-Mux-Demux](./P02-4bit-mux-demux/) | Verilog Basics | ✅ Complete |
-| P03 | [D-flip-flop-4-bit-Register](./P03-d-flip-flop-4bit-register/) | Sequential Logic | ✅ Complete |
-| P04 | [4-bit-Up-Down-Counter](./P04-4bit-up-down-counter/) | Sequential Logic | ✅ Complete |
-| P05 | [FSM Sequence Detector](./P05-fsm-sequence-detector-moore-mealy/) | Finite State Machines (FSM) | ✅ Complete |
-| P06 | [4-bit Arithmetic Logic Unit (ALU)](./P06-4bit-arithmetic-logic-unit/) | Combinational Logic / ALU Design | ✅ Complete |
+| # | Project | Level | Skill | Status |
+|---|---------|-------|-------|--------|
+| P01 | [4-bit-Adder](./Beginner/P01-4bit-adder/) | Beginner | Verilog Basics | ✅ Complete |
+| P02 | [4-bit-Mux-Demux](./Beginner/P02-4bit-mux-demux/) | Beginner | Verilog Basics | ✅ Complete |
+| P03 | [D-flip-flop-4-bit-Register](./Beginner/P03-d-flip-flop-4bit-register/) | Beginner | Sequential Logic | ✅ Complete |
+| P04 | [4-bit-Up-Down-Counter](./Beginner/P04-4bit-up-down-counter/) | Beginner | Sequential Logic | ✅ Complete |
+| P05 | [FSM Sequence Detector](./Beginner/P05-fsm-sequence-detector-moore-mealy/) | Beginner | Finite State Machines (FSM) | ✅ Complete |
+| P06 | [4-bit Arithmetic Logic Unit (ALU)](./Beginner/P06-4bit-arithmetic-logic-unit/) | Beginner | Combinational Logic / ALU Design | ✅ Complete |
 
 *More projects will be added as I keep learning.*
 
