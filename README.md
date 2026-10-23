@@ -76,7 +76,7 @@ VLSI-/
 - EPWave — waveform viewer
 - Icarus Verilog (`iverilog` / `vvp`) — local simulation, used for the
   Intermediate projects' self-checking testbenches
-- GTKWave — local VCD waveform viewer
+- Surfer — local waveform viewer (VCD)
 
 ---
 

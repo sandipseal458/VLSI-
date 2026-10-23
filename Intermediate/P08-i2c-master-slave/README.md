@@ -127,7 +127,7 @@ the end):
 ## Tools Used
 
 - Icarus Verilog — simulation (`iverilog` / `vvp`)
-- GTKWave — waveform viewer (VCD dump; image rendered from it)
+- Surfer — waveform viewer (VCD dump; image rendered from it)
 
 ---
 
