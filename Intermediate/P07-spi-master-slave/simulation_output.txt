@@ -1,6 +1,0 @@
-VCD info: dumpfile SPI_testbench.vcd opened for output.
- Time = 0, CS = x | master_tx_data = a5, master_rx_data = xx | slave_tx_data = 3c, slave_rx_data = xx 
- Time = 15, CS = 0 | master_tx_data = a5, master_rx_data = xx | slave_tx_data = 3c, slave_rx_data = xx 
- Time = 325, CS = 0 | master_tx_data = a5, master_rx_data = xx | slave_tx_data = 3c, slave_rx_data = a5 
- Time = 335, CS = 1 | master_tx_data = a5, master_rx_data = 3c | slave_tx_data = 3c, slave_rx_data = a5 
-tb_spi.v:28: $finish called at 420 (1s)

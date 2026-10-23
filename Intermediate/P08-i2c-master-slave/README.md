@@ -115,7 +115,6 @@ slave latches it (`slave_wdata` flips to `0xA5`) — then the read, where
 | `i2c_master.v` | master RTL |
 | `i2c_slave.v` | slave RTL |
 | `tb_i2c.v` | testbench — one write and one read |
-| `simulation_output.txt` | console log |
 | `simulation_output.png` | console output image |
 | `waveform.png` | waveform image (from the VCD dump) |
 

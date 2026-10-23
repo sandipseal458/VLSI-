@@ -92,7 +92,6 @@ and `master_rx` / `slave_rx` update at the end of the frame with the
 |------|-------------|
 | `spi_master_slave.v` | master + slave RTL |
 | `tb_spi.v` | testbench — one byte exchange, `$monitor` log |
-| `simulation_output.txt` | console log |
 | `simulation_output.png` | console output image |
 | `waveform.png` | waveform image (from the VCD dump) |
 

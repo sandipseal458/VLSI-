@@ -1,4 +1,0 @@
-VCD info: dumpfile tb_uart.vcd opened for output.
-recieved data is 55
-recieved data is aa
-tb_uart.v:50: $finish called at 1146400 (1s)

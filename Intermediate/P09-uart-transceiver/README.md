@@ -108,7 +108,6 @@ moment:
 |------|-------------|
 | `uart_top.v` | baud generator + TX + RX RTL |
 | `tb_uart.v` | loopback testbench — two bytes via `send_byte` / `clear_ready` tasks |
-| `simulation_output.txt` | console log |
 | `simulation_output.png` | console output image |
 | `waveform.png` | waveform image (from the VCD dump) |
 

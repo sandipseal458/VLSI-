@@ -94,7 +94,6 @@ ports update as it goes:
 |------|-------------|
 | `register_file.v` | register file RTL |
 | `tb_register.v` | testbench — write sweep + read-back |
-| `simulation_output.txt` | console log |
 | `simulation_output.png` | console output image |
 | `waveform.png` | waveform image (from the VCD dump) |
 
