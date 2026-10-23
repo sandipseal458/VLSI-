@@ -99,12 +99,20 @@ appearing at the end.
 
 ## Waveform
 
-The whole testbench run: first the write — `sda` carries `START`,
-address `0x28` + write bit, data `0xA5`, and `data_valid` pulses when the
-slave latches it (`slave_wdata` flips to `0xA5`) — then the read, where
-`master_rdata` fills in bit by bit up to `0xC3`:
+The whole testbench run, seen from inside the master and inside the
+slave.
 
-![I2C Waveform](waveform.png)
+Master — `sda` carries both transactions, `rw` flips for the read,
+`slave_address` assembles `0x50` then `0x51`, and `master_rdata` fills
+in bit by bit (`80 → c0 → c2 → c3`):
+
+![I2C master waveform](waveform_master.png)
+
+Slave — `start_cond` / `stop_cond` mark the frame edges, `data_reg`
+shifts the written byte in (`80 → a0 → a4 → a5`), and `data_valid`
+pulses when it lands in `data_out`:
+
+![I2C slave waveform](waveform_slave.png)
 
 ---
 
@@ -116,7 +124,8 @@ slave latches it (`slave_wdata` flips to `0xA5`) — then the read, where
 | `i2c_slave.v` | slave RTL |
 | `tb_i2c.v` | testbench — one write and one read |
 | `simulation_output.png` | console output image |
-| `waveform.png` | waveform image (from the VCD dump) |
+| `waveform_master.png` | master-side waveform image |
+| `waveform_slave.png` | slave-side waveform image |
 
 ---
 
