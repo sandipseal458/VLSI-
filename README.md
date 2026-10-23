@@ -7,8 +7,8 @@ engineering roles, and this repository is where each project lives with its
 RTL, its testbench and its simulation evidence.
 
 Every project here is synthesizable Verilog (or SystemVerilog), simulated
-and documented — RTL, self-checking testbench, and the console/waveform
-output that proves it works.
+and documented — RTL, testbench, and the console/waveform output that
+shows it working.
 
 ---
 
@@ -44,8 +44,8 @@ VLSI-/
 
 - **Beginner** — single-purpose blocks: arithmetic, mux/demux, registers,
   counters, FSMs, an ALU.
-- **Intermediate** — real serial protocols and datapath components with
-  self-checking testbenches: SPI, I²C, UART, register file.
+- **Intermediate** — real serial protocols and datapath components:
+  SPI, I²C, UART, register file.
 - **Advanced** — processor-level work; projects land here as I build them.
 
 ---
@@ -75,7 +75,7 @@ VLSI-/
 - Cadence Xcelium — simulation engine
 - EPWave — waveform viewer
 - Icarus Verilog (`iverilog` / `vvp`) — local simulation, used for the
-  Intermediate projects' self-checking testbenches
+  Intermediate projects
 - Surfer — local waveform viewer (VCD)
 
 ---

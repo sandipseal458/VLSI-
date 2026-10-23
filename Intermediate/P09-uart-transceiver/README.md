@@ -4,7 +4,9 @@ UART is the protocol with no clock line at all: one wire in each
 direction, two sides that agree in advance on a baud rate and frame each
 byte with a start bit and a stop bit. This project is a full transceiver —
 baud generator, transmitter, and receiver — wired into a loopback so the
-byte that leaves the TX pin comes back in on the RX pin.
+byte that goes out on the serial line comes straight back in — there are
+no serial pins here at all, `uart_top` wires the transmitter's `tx`
+directly to the receiver's `rx` on the inside.
 
 After SPI and I²C, this was the point where I stopped thinking about
 "wires per protocol" and started thinking about *timing assumptions*.
@@ -21,8 +23,6 @@ UART interesting follows from that one absence.
 | `clk`, `reset` | in | system clock, async reset |
 | `wt_enable` | in | pulse to transmit the byte on `data_in` |
 | `data_in[7:0]` | in | byte to send |
-| `tx` | out | serial output (idle high) |
-| `rx` | in | serial input |
 | `busy` | out | transmitter is shifting a frame |
 | `rdy` | out | receiver has a complete byte |
 | `rdy_clr` | in | acknowledge the received byte |
@@ -60,28 +60,27 @@ The first version of the TX FSM I wrote latched its outputs instead of
 being a real registered FSM — it looked fine in inspection and synthesised
 as storage exactly where I wanted none. The RX was worse: its bit counter
 compared against a constant it could never reach, so the receiver sat in
-"waiting for start" forever and the loopback test hung until the watchdog
-fired. Rewriting both as explicit next-state machines with one shared
-bit-timing constant fixed the design; the same test vectors then passed
-unchanged.
+"waiting for start" forever and the loopback printed nothing at all.
+Rewriting both as explicit next-state machines with one shared
+bit-timing constant fixed the design; the two test bytes then came back
+exactly as sent.
 
 ---
 
 ## Test Cases Covered
 
-Three loopback bytes through the full TX → wire → RX path, three checks
-per byte — 12 checks:
+Two loopback bytes through the full TX → wire → RX path, one `$display`
+per byte printing what the receiver decoded:
 
 | Test | Byte | Pattern |
 |------|------|---------|
 | T1 | `0x55` | alternating `01010101` — every bit boundary toggles |
 | T2 | `0xAA` | alternating `10101010` — the complement |
-| T3 | `0x00` | all zeros — longest low run, start/stop still frame it |
 
-Each test checks that `busy` releases after the frame, `rdy` asserts, and
-the received byte equals the sent one. `0x55`/`0xAA` maximise transitions
-for sampling; `0x00` is the quietest possible frame — together they cover
-start-bit detection, mid-bit sampling, and stop-bit framing.
+Both bytes maximise transitions, which is where mid-bit sampling either
+works or doesn't. The log's `recieved data is 55` / `recieved data is aa`
+means the receiver stepped through start, eight bits, and stop, and
+landed on what the transmitter sent.
 
 ---
 
@@ -94,9 +93,10 @@ start-bit detection, mid-bit sampling, and stop-bit framing.
 ## Waveform
 
 The first loopback byte, `0x55`: `wt_enable` starts the frame, `busy`
-holds high for ten bit periods, the serial line carries start + 8 data
-bits + stop, and `rdy` pulses when the receiver has decoded the byte —
-`data_out` updates to `0x55` at that moment:
+holds high for ten bit periods, `tx_temp` — the internal wire from tx to
+rx — carries start + 8 data bits + stop, and `rdy` pulses when the
+receiver has decoded the byte — `data_out` updates to `0x55` at that
+moment:
 
 ![UART Waveform](waveform.png)
 
@@ -107,7 +107,7 @@ bits + stop, and `rdy` pulses when the receiver has decoded the byte —
 | File | Description |
 |------|-------------|
 | `uart_top.v` | baud generator + TX + RX RTL |
-| `tb_uart.v` | self-checking loopback testbench — 12 checks |
+| `tb_uart.v` | loopback testbench — two bytes via `send_byte` / `clear_ready` tasks |
 | `simulation_output.txt` | console log |
 | `simulation_output.png` | console output image |
 | `waveform.png` | waveform image (from the VCD dump) |
@@ -135,6 +135,10 @@ bits + stop, and `rdy` pulses when the receiver has decoded the byte —
   waits on `busy` falling and `rdy` rising; that is also exactly how a
   processor's UART driver would use the block. Designing the status flags
   *for the consumer* made the testbench almost trivial.
-- **A watchdog in the testbench catches hangs, not just wrong values.**
-  The dead RX counter didn't fail a check — it never reached one. Timeouts
-  are how a self-checking testbench reports silence as a failure.
+- **The internal loopback trades realism for focus.** No pins, no board —
+  the whole protocol is exercised inside one module, which is enough to
+  trust the framing before wiring it to real pins later.
+- **`send_byte` / `clear_ready` tasks are how the testbench stays
+  readable.** The test is two lines per byte: send it, wait for the
+  handshake, print what came back — the tasks make the log's intent
+  obvious at a glance.

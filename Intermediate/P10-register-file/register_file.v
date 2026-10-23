@@ -6,12 +6,11 @@ module register (
     output [31:0] r_data1, r_data2
 );
     reg [31:0] memory [0:31];
-    integer i;
 
     always @(posedge clk)
     begin
         if (reset) begin
-            for(i = 0; i < 32; i = i + 1) begin
+            for(integer i = 0; i < 32; i = i + 1) begin
                 memory[i] <= 0;
             end
         end else if (wt_enable) begin

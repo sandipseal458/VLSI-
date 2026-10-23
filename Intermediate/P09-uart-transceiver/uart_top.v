@@ -2,8 +2,6 @@ module baud_rate_generator (
     input clk, 
     output tx_enable, rx_enable);
 
-   // Power-on values: this block has no reset port, so the counters
-   // must start defined or the enable pulses would stay X forever.
    reg [12:0] tx_count = 13'd0;
     reg [8:0] rx_count = 9'd0;
 
@@ -26,19 +24,6 @@ module baud_rate_generator (
     assign tx_enable = (tx_count == 0) ? 1'b1 : 1'b0;
     assign rx_enable = (rx_count == 0) ? 1'b1 : 1'b0;   
 endmodule
-//-------------------------------------------------------
-// -----------------------------------------------------------------------------
-// Transmitter: standard 8N1 UART sender (1 start, 8 data LSB first,
-// 1 stop), paced by the one-clock tx_enable pulse from the baud rate
-// generator (one pulse per bit period).
-//
-// The FSM is written as a single clocked always block: every state
-// change and every change of tx happens on a baud tick, so the bit
-// timing comes from the baud generator alone. wt_enable is captured
-// into `pending` while the transmitter is idle and the frame starts on
-// the next baud tick; busy stays high from that moment until the stop
-// bit has been sent.
-// -----------------------------------------------------------------------------
 module transmitter (
     input clk,
     input reset,
@@ -70,15 +55,12 @@ begin
     end
     else
     begin
-        // Capture a new byte only while idle, so a request arriving
-        // mid-frame can never corrupt the byte being transmitted.
         if (wt_enable && state == IDLE && pending == 1'b0)
         begin
             data_reg <= data_in;
             pending  <= 1'b1;
         end
 
-        // One baud tick = one bit period.
         if (enable)
         begin
             case (state)
@@ -135,15 +117,6 @@ assign busy = (state != IDLE) | pending;
 
 endmodule
 
-// Receiver: 16x oversampling UART receiver.
-//
-// The receiver waits for a falling edge on rx (start bit), samples the
-// middle of the start bit to reject glitches, then samples every data
-// bit at its middle using the 16x rx_enable tick. The stop bit is
-// checked before the byte is presented on data_out with rdy asserted.
-//
-// All state lives in a single clocked always block, so nothing infers a
-// latch and everything is synchronous to the system clock.
 module receiver(
     input clk, reset, rx, rdy_clr, clk_en,
     output reg rdy,
@@ -185,8 +158,6 @@ begin
             prev_rx <= rx;
 
             case (state)
-                // Wait for the start bit (rx falling edge), then confirm
-                // the line is still low at the middle of the start bit.
                 START:
                 begin
                     if (armed == 1'b0)
@@ -214,9 +185,6 @@ begin
                         data_sample <= data_sample + 4'd1;
                 end
 
-                // One bit takes 16 rx_enable ticks; sample at tick 15,
-                // which lands in the middle of the bit because the state
-                // was entered at the middle of the start bit.
                 DATA_OUT:
                 begin
                     if (data_sample == 4'd15)
@@ -235,8 +203,6 @@ begin
                         data_sample <= data_sample + 4'd1;
                 end
 
-                // Sample the stop bit: it must be high, otherwise the
-                // byte is discarded as a framing error.
                 STOP:
                 begin
                     if (data_sample == 4'd15)
@@ -263,7 +229,6 @@ begin
 end
 
 endmodule
-//-----------------------------------------------
 module uart_top(
     input clk, reset, wt_enable, rdy_clr,
     input [7:0]data_in,

@@ -69,28 +69,25 @@ device can hold `sda` low (the ACK) while the master is still clocking.
    in-transaction flag fixed it — the first *real* bit is bit 6 of the
    address, not a phantom bit 7.
 
-Both were invisible in the PASS/FAIL log — the waveform showed each in
-one glance, which is the strongest argument I have for dumping VCDs even
-when tests pass.
+Both were invisible in the text log — the waveform showed each in one
+glance, which is the strongest argument I have for dumping VCDs even when
+the printed result looks right.
 
 ---
 
 ## Test Cases Covered
 
-Six directed transactions, 10 checks, covering writes, reads, addressing,
-and reset recovery:
+One write followed by one read, the two things I²C exists for:
 
 | Test | Scenario | What it proves |
 |------|----------|----------------|
-| T1 | write `0xA5` to `0x28` | slave latches exactly one byte, correct value |
-| T2 | write `0x5A` to `0x28` | second write works; not a one-shot |
-| T3 | read from `0x28` | master receives the slave's byte `0xC3` |
-| T4 | write to `0x29` (wrong address) | slave ignores it — `rx_count` unchanged |
-| T5 | write `0x11`, then read `0x22` | back-to-back different transactions |
-| T6 | reset mid-traffic, then write `0x99` | bus recovers after reset |
+| T1 | write `0xA5` to `0x28` | slave latches the byte — `data_valid` pulses and the log prints `slave received = a5` |
+| T2 | read from `0x28` | master receives the slave's byte — the log prints `master read = c3` |
 
-T4 costs one transaction and proves the slave's address decode is real,
-not "always accept" — the cheapest structural test in the set.
+The `$monitor` line also catches `master_rdata` filling in bit by bit
+during the read (`0x80 → 0xC0 → 0xC2 → 0xC3`), which is the easiest way
+to see the slave really shifted its register out rather than a value
+appearing at the end.
 
 ---
 
@@ -102,10 +99,10 @@ not "always accept" — the cheapest structural test in the set.
 
 ## Waveform
 
-One complete write transaction: `START`, address `0x28` + write bit, ACK,
-data byte `0xA5`, ACK, `STOP`. The slave's state machine walks through its
-address/ack/write states and latches the byte (`slave_data_valid` pulse at
-the end):
+The whole testbench run: first the write — `sda` carries `START`,
+address `0x28` + write bit, data `0xA5`, and `data_valid` pulses when the
+slave latches it (`slave_wdata` flips to `0xA5`) — then the read, where
+`master_rdata` fills in bit by bit up to `0xC3`:
 
 ![I2C Waveform](waveform.png)
 
@@ -117,7 +114,7 @@ the end):
 |------|-------------|
 | `i2c_master.v` | master RTL |
 | `i2c_slave.v` | slave RTL |
-| `tb_i2c.v` | self-checking testbench — 10 checks |
+| `tb_i2c.v` | testbench — one write and one read |
 | `simulation_output.txt` | console log |
 | `simulation_output.png` | console output image |
 | `waveform.png` | waveform image (from the VCD dump) |
@@ -144,5 +141,6 @@ the end):
   The off-by-one sampling bug looked, in the log, exactly like "the slave
   is broken". The waveform showed the real story in one glance — the state
   machine never left its address state.
-- **Test the wrong address.** T4 proves the match logic matters; a slave
-  that ACKs everything would pass T1–T3 and fail on a real bus.
+- **Watch the latch pulse, not just the final value.** `data_valid`
+  tells me the byte landed mid-frame; a correct-looking output register
+  alone could just be a stale value from an earlier transaction.

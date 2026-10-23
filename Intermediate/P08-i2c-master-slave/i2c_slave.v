@@ -1,23 +1,3 @@
-// -----------------------------------------------------------------------------
-// I2C_slave.v
-//
-// Simple I2C slave (receiver / transmitter) used together with I2C_master.v.
-//
-// Protocol handling:
-//   * START  : SDA pulled low while SCL is high
-//   * STOP   : SDA released high while SCL is high
-//   * ADDRESS: 7-bit slave address followed by one R/W bit, MSB first
-//   * ACK    : slave pulls SDA low during the 9th clock of every byte
-//
-// The slave latches the address, compares it with its own and either
-// accepts the byte (ACK) or ignores the transaction. When the master
-// writes, the received byte appears on data_out with data_valid asserted
-// for one clock. When the master reads, data_in is shifted out on SDA.
-//
-// Open-drain convention: driving the line means pulling it LOW, releasing
-// it means letting the pull-up resistor take it HIGH.
-// -----------------------------------------------------------------------------
-
 module I2C_slave (
     input clk,
     input reset,
@@ -44,7 +24,7 @@ reg [2:0] bit_count;
 reg sda_drive;
 reg shift_bit;
 reg rw_bit;
-reg bit_armed;          // set once the first bit of a byte has been sampled
+reg bit_armed;
 
 reg prev_scl;
 reg prev_sda;
@@ -69,8 +49,8 @@ always @(posedge clk or posedge reset) begin
         data_out          <= 8'd0;
         data_valid        <= 1'b0;
         bit_count         <= 3'd7;
-        bit_armed         <= 1'b0;
         rw_bit            <= 1'b0;
+        bit_armed         <= 1'b0;
         prev_scl          <= 1'b1;
         prev_sda          <= 1'b1;
     end else begin
@@ -87,30 +67,23 @@ always @(posedge clk or posedge reset) begin
         end else if (stop_cond) begin
             state <= IDLE;
         end else begin
-            // The bit counter is advanced on the falling edge of SCL, but only
-            // once a bit has actually been sampled. Otherwise the falling edge
-            // that terminates the START condition would be counted as a bit
-            // and the address would be shifted by one position.
-            if (shift_bit && bit_armed)
+            if (shift_bit && bit_armed) // count only after first bit is sampled
                 bit_count <= bit_count - 1'b1;
 
-            // Address phase: sample the address MSB first, the 8th bit is R/W
             if (state == SLAVE_ADD && scl_rise) begin
                 slave_address_reg[bit_count] <= sda;
                 bit_armed <= 1'b1;
-
-                if (bit_count == 3'd0)
-                    rw_bit <= sda;            // 8th bit is R/W
             end
 
-            // Write phase: sample the data byte MSB first
-            if (state == WRITE_DATA && scl_rise) begin
+            if (state == WRITE_DATA && scl_rise)
                 data_reg[bit_count] <= sda;
 
-                if (bit_count == 3'd0) begin
-                    data_out   <= {data_reg[7:1], sda};
-                    data_valid <= 1'b1;
-                end
+            if (state == SLAVE_ADD && bit_count == 3'd0 && scl_rise)
+                rw_bit <= sda; // 8th bit is R/W
+
+            if (state == WRITE_DATA && bit_count == 3'd0 && scl_rise) begin
+                data_out   <= {data_reg[7:1], sda};
+                data_valid <= 1'b1;
             end
 
             if ((state == ACK || state == ACK_WAIT) && scl_fall)

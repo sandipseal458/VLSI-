@@ -1,27 +1,4 @@
 VCD info: dumpfile tb_uart.vcd opened for output.
-
-=========================================================
- UART loopback testbench (baud rate generator + TX + RX)
-=========================================================
-[95000] TB: T1 - send 0x55
-[573005000] TB: PASS - transmitter released busy
-[573005000] TB: PASS - receiver asserted rdy
-[573005000] TB: PASS - loopback byte matches what was sent
-[573020000] TB: T2 - send 0xAA
-[1145995000] TB: PASS - transmitter released busy
-[1145995000] TB: PASS - receiver asserted rdy
-[1145995000] TB: PASS - loopback byte matches what was sent
-[1146010000] TB: T3 - send 0x00
-[1718985000] TB: PASS - transmitter released busy
-[1718985000] TB: PASS - receiver asserted rdy
-[1718985000] TB: PASS - loopback byte matches what was sent
-[1719000000] TB: T4 - send 0xFF
-[2291975000] TB: PASS - transmitter released busy
-[2291975000] TB: PASS - receiver asserted rdy
-[2291975000] TB: PASS - loopback byte matches what was sent
-
-=========================================================
- RESULT: PASSED  (12 checks)
-=========================================================
-
-tb_uart.v:184: $finish called at 2291990000 (1ps)
+recieved data is 55
+recieved data is aa
+tb_uart.v:50: $finish called at 1146400 (1s)

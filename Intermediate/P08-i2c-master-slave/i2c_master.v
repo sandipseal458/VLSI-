@@ -93,9 +93,7 @@ always @(*) begin
     case (state)
         IDLE: begin
             sda_drive  = 1'b0;
-            // Begin a transaction only while SCL is HIGH: SDA falling while
-            // SCL is high is what the slave detects as a valid START condition.
-            next_state = (start && sclk) ? START : IDLE;
+            next_state = (start && sclk) ? START : IDLE; // START only while SCL is HIGH
         end
 
         START: begin

@@ -57,19 +57,16 @@ reply — SPI buys its speed with wires, one dedicated line per direction.
 
 ## Test Cases Covered
 
-Three full exchanges with different byte patterns, each checked from both
-sides, plus the `CS` framing check — 12 checks in total:
+One full exchange, watched with `$monitor` so the log itself is the check:
 
 | Test | Exchange | What it proves |
 |------|----------|----------------|
-| T1 | `0xA5` ↔ `0x3C` | both sides receive the other's byte; mixed bit pattern |
-| T2 | `0x3C` ↔ `0xA5` | same bytes swapped — direction is not hardcoded |
-| T3 | `0x00` ↔ `0xFF` | all-zeros vs all-ones: every bit path toggles |
-| CS | every frame | `CS` is low mid-frame and returns high after — framing, not free-running |
+| T1 | master `0xA5` ↔ slave `0x3C` | both sides end up with the other's byte on the same eight clocks |
+| CS | before/after the frame | `CS` is low mid-frame and returns high after — framing, not free-running |
 
-T2 exists because T1 alone cannot tell "master sends A5, slave sends 3C"
-from a design that hardcodes which side owns which value — swapping the
-bytes is the cheapest way to prove the datapath is symmetric.
+The log shows `master_rx_data` and `slave_rx_data` staying `xx` until the
+last clock of the frame, then updating together — the bytes really do
+cross in flight.
 
 ---
 
@@ -81,9 +78,9 @@ bytes is the cheapest way to prove the datapath is symmetric.
 
 ## Waveform
 
-Three frames, back to back. `CS` drops, eight `sclk` pulses, both bytes
-cross in flight, and `master_rx` / `slave_rx` update at the end of each
-frame with the *other* side's transmit byte:
+One frame: `CS` drops, eight `sclk` pulses, both bytes cross in flight,
+and `master_rx` / `slave_rx` update at the end of the frame with the
+*other* side's transmit byte:
 
 ![SPI Waveform](waveform.png)
 
@@ -94,7 +91,7 @@ frame with the *other* side's transmit byte:
 | File | Description |
 |------|-------------|
 | `spi_master_slave.v` | master + slave RTL |
-| `tb_spi.v` | self-checking testbench — 12 checks |
+| `tb_spi.v` | testbench — one byte exchange, `$monitor` log |
 | `simulation_output.txt` | console log |
 | `simulation_output.png` | console output image |
 | `waveform.png` | waveform image (from the VCD dump) |
@@ -116,7 +113,8 @@ frame with the *other* side's transmit byte:
   mode (`CPHA`) on one side only, and every bit shifts by one.
 - **`CS` does framing work that the clock cannot.** Without `CS` between
   frames, the slave cannot tell one byte from the next — the bit counter
-  would free-run. The testbench therefore checks `CS` explicitly, not just
-  the data.
-- **The first test should swap the bytes.** Symmetric exchange tests catch
-  hardcoded-direction bugs that a single happy-path vector never will.
+  would free-run. The testbench log therefore prints `CS` alongside the
+  data, not just the data.
+- **A `$monitor` on the right four signals shows the whole protocol.**
+  `CS`, `sclk`, `MOSI`, `MISO` — the entire exchange fits in five log
+  lines, which is usually all I need before reaching for the waveform.

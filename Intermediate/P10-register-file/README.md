@@ -56,22 +56,18 @@ read path now sits in the design's critical timing loop.
 
 ## Test Cases Covered
 
-Six test phases with a golden model in the testbench — 6 checks covering
-every structural claim:
+Two sweeps over all 32 registers — a write pass and a read-back pass:
 
 | Test | Scenario | What it proves |
 |------|----------|----------------|
-| T1 | reset clears all 32 words | no stale state after reset |
-| T2 | write and read back all 32 words | every address decodes; golden-model compare |
-| T3 | dual-port read of two different words | both ports are independent |
-| T4 | write attempt with `wt_enable` low | writes are strobed, not free-running |
-| T5 | consecutive write/read of different words | back-to-back transactions, no holdover |
-| T6 | write `0xFEED_FACE`, read immediately | write-first visibility on the same cycle |
+| T1 | write `i * 10` into every register, one write per clock | every address decodes; `w_add` counts 0 → 31 |
+| T2 | read all 32 addresses back on both ports | values follow the pattern; port 2 wraps from 31 back to 0 |
 
-T2 is one loop against a software array the testbench keeps in parallel:
-each register gets a pattern derived from its own address, and every read
-is compared against the model. Any addressing bug shows up as a mismatch
-instead of a hand-checked table — one loop covers all thirty-two words.
+Each register holds `address * 10`, so the log reads `0, a, 14, 1e …`
+stepping by `0xA` — if an address decoded wrong, the step would break and
+jump out of the log, no comparison code needed. The last line reads port
+2 at address 0 while port 1 sits at address 31, which is the dual-port
+claim checked in one row.
 
 ---
 
@@ -84,8 +80,9 @@ instead of a hand-checked table — one loop covers all thirty-two words.
 ## Waveform
 
 The reset pulse, then thirty-two back-to-back writes — `w_add` counts up,
-`w_data` carries the golden-model pattern — followed by the read-back
-checks at the end of the run:
+`w_data` carries `0, 0xA, 0x14 … 0x136` — followed by the read-back
+sweep, where `r_add1` walks the whole file in 32 ticks and both data
+ports update as it goes:
 
 ![Register File Waveform](waveform.png)
 
@@ -96,7 +93,7 @@ checks at the end of the run:
 | File | Description |
 |------|-------------|
 | `register_file.v` | register file RTL |
-| `tb_register.v` | self-checking testbench — 6 checks |
+| `tb_register.v` | testbench — write sweep + read-back |
 | `simulation_output.txt` | console log |
 | `simulation_output.png` | console output image |
 | `waveform.png` | waveform image (from the VCD dump) |
@@ -117,13 +114,16 @@ checks at the end of the run:
   operands in the execute stage; the cost is that the read path is now in
   the critical timing loop, and that trade-off is visible from the day you
   draw the block.
-- **A golden model in the testbench pays for itself.** Deriving expected
-  data from the address and looping over all 32 words turned a
-  thirty-two-row hand-checked table into one comparison — and any
-  addressing bug reports itself.
-- **`wt_enable` needs its own negative test.** T4 writes with the strobe
-  low and proves nothing changed; designs that forget the enable decode
-  fail this in one line.
+- **A pattern you can check by eye beats a scoreboard here.** `i * 10`
+  means every read-back line must step by `0xA` — the log itself becomes
+  the check, and the whole test stays a for-loop and a `$display`.
+- **The write loop needs a delay per iteration.** My first version had
+  none, so all 32 writes landed on the same clock edge and only the last
+  address survived — the read-back came out all `x` until the `#10` went
+  into the loop.
+- **Reset is a loop, not a constant.** Clearing 32 words needs a `for`
+  inside the `always` block; a single `x <= 0` would clear exactly one
+  register and leave 31 of them stale.
 - **This array is where "processor" starts.** The ALU from P06 and this
   register file are two halves of the same datapath — the next step is a
   fetch-decode-execute loop that drives both.

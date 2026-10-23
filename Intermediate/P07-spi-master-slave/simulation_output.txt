@@ -1,26 +1,6 @@
-VCD info: dumpfile tb_spi.vcd opened for output.
-
-=========================================================
- SPI master / slave full-duplex testbench
-=========================================================
-[0] TB: T1 - exchange 0xA5 <-> 0x3C
-[270000] TB: PASS - CS is low while the frame is in flight
-[345000] TB: PASS - CS returns high after the frame
-[345000] TB: PASS - T1 master received the slave byte 0x3C
-[345000] TB: PASS - T1 slave received the master byte 0xA5
-[345000] TB: T2 - exchange 0x3C <-> 0xA5
-[610000] TB: PASS - CS is low while the frame is in flight
-[685000] TB: PASS - CS returns high after the frame
-[685000] TB: PASS - T2 master received the slave byte 0xA5
-[685000] TB: PASS - T2 slave received the master byte 0x3C
-[685000] TB: T3 - exchange 0x00 <-> 0xFF
-[950000] TB: PASS - CS is low while the frame is in flight
-[1025000] TB: PASS - CS returns high after the frame
-[1025000] TB: PASS - T3 master received 0xFF
-[1025000] TB: PASS - T3 slave received 0x00
-
-=========================================================
- RESULT: PASSED  (12 checks)
-=========================================================
-
-tb_spi.v:165: $finish called at 1025000 (1ps)
+VCD info: dumpfile SPI_testbench.vcd opened for output.
+ Time = 0, CS = x | master_tx_data = a5, master_rx_data = xx | slave_tx_data = 3c, slave_rx_data = xx 
+ Time = 15, CS = 0 | master_tx_data = a5, master_rx_data = xx | slave_tx_data = 3c, slave_rx_data = xx 
+ Time = 325, CS = 0 | master_tx_data = a5, master_rx_data = xx | slave_tx_data = 3c, slave_rx_data = a5 
+ Time = 335, CS = 1 | master_tx_data = a5, master_rx_data = 3c | slave_tx_data = 3c, slave_rx_data = a5 
+tb_spi.v:28: $finish called at 420 (1s)
