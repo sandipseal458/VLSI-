@@ -1,4 +1,4 @@
-# VLSI Design and Verification Portfolio
+# VLSI Design and Verification 
 
 A structured collection of digital design projects focused on RTL development, verification, and sequential logic design. This repository documents my learning and implementation journey in VLSI, beginning with foundational digital blocks and advancing toward serial communication protocols and professional-grade system design.
 
@@ -30,20 +30,10 @@ VLSI-/
 The Academic section follows a gradual learning path:
 
 ### Beginner
-Core digital design fundamentals including:
-- 4-bit adder
-- Mux/demux
-- D flip-flop and register design
-- Up/down counter
-- FSM sequence detector
-- 4-bit arithmetic logic unit (ALU)
+Core digital design fundamentals.
 
-### Intermediate
-More advanced digital design topics covering:
-- SPI master/slave communication
-- I²C master/slave communication
-- UART transceiver
-- Register file design
+## Intermediate
+More advanced digital design topics.
 
 ### Advanced
 A forward-looking section for increasingly complex designs and processor-related digital blocks as the portfolio grows.
@@ -51,18 +41,7 @@ A forward-looking section for increasingly complex designs and processor-related
 For detailed project listings and structure, see the [Academic README](./Academic/README.md).
 
 ## Professional Track
-
-The current professional project is:
-
-- [esim-modbus-rtu-master-slave](./Professional/esim-modbus-rtu-master-slave/)
-
-This project includes:
-- Modbus master and slave RTL design
-- UART transmit/receive modules
-- CRC-16 Modbus checksum generation
-- Verification testbenches for timing, noise, system behavior, and UART loopback operation
-
-The design is structured around a realistic communication stack and follows the practical workflow of digital hardware verification: RTL implementation, testbench creation, and simulation validation.
+The Professional section focuses on applied, production-oriented RTL design, complex sub-system architectures, and industrial-grade serial communication protocols.
 
 ## Skills and Focus Areas
 
@@ -84,16 +63,6 @@ The projects in this repository are built around hardware-design workflows and s
 - EPWave
 - waveform viewers and logic debugging tools
 
-## Learning Philosophy
-
-This repository reflects an iterative approach to VLSI learning:
-
-1. Build fundamental digital blocks
-2. Understand timing and control behavior
-3. Implement communication protocols
-4. Validate with testbenches and waveform analysis
-5. Progress toward robust system-level hardware design
-
 ## Getting Started
 
 Clone the repository locally:
@@ -107,14 +76,6 @@ Then open the relevant section:
 
 - `Academic/` for learning-based designs
 - `Professional/` for advanced or application-oriented projects
-
-## Roadmap
-
-The repository is continuously expanding with:
-- new RTL designs
-- protocol-based implementations
-- verification-focused projects
-- larger integrated digital systems
 
 ## Author
 
