@@ -1,52 +1,129 @@
-# VLSI Design & Verification Portfolio
+# VLSI Design and Verification Portfolio
 
-A growing collection of digital-design projects covering foundational RTL concepts, common hardware building blocks, serial communication protocols, and verification testbenches. The repository is organized into **Academic** and **Professional** sections to make learning projects and larger implementations easy to explore.
+A structured collection of digital design projects focused on RTL development, verification, and sequential logic design. This repository documents my learning and implementation journey in VLSI, beginning with foundational digital blocks and advancing toward serial communication protocols and professional-grade system design.
 
-## Repository contents
+## Overview
 
-| Section | Description |
-| --- | --- |
-| [Academic](./Academic/) | A progressive learning path from beginner combinational and sequential logic to intermediate designs such as SPI, I²C, UART, and a register file. The [Academic README](./Academic/README.md) includes the project list, skill levels, tools, and background. |
-| [Professional](./Professional/) | Project-oriented RTL work. The current project, [eSim Modbus RTU Master/Slave](./Professional/esim-modbus-rtu-master-slave/), contains UART, Modbus master and slave, and CRC-16 RTL modules, with testbenches in its `tb/` directory. |
+This repository is organized into two main areas:
 
-## Academic project roadmap
+- [Academic](./Academic/) — a progressive learning track covering digital logic fundamentals, combinational and sequential circuits, and protocol-level design.
+- [Professional](./Professional/) — applied RTL work and system-level design projects focused on real-world interfaces and verification.
 
-The Academic section groups projects by experience level:
+The goal is to build a strong portfolio of synthesizable Verilog/SystemVerilog implementations, simulation-based validation, and reusable digital design practices.
 
-- **Beginner:** 4-bit adder, mux/demux, D flip-flop and register, up/down counter, FSM sequence detector, and 4-bit ALU.
-- **Intermediate:** SPI master/slave, I²C master/slave, UART transceiver, and register file.
-- **Advanced:** Reserved for future projects as the collection grows.
+## Repository Structure
 
-See the [Academic README](./Academic/README.md) for individual project links and further details.
+```text
+VLSI-/
+├── Academic/
+│   ├── Beginner/
+│   ├── Intermediate/
+│   └── Advanced/
+├── Professional/
+│   └── esim-modbus-rtu-master-slave/
+├── README.md
+└── .gitignore
+```
 
-## Professional project: Modbus RTU
+## Academic Track
 
-The current professional project is organized into:
+The Academic section follows a gradual learning path:
 
-- `rtl/` — Verilog modules for Modbus master and slave functionality, UART transmit/receive, and Modbus CRC-16.
-- `tb/` — testbenches covering the CRC, UART loopback, Modbus slave/system behavior, timing, and noise scenarios.
+### Beginner
+Core digital design fundamentals including:
+- 4-bit adder
+- Mux/demux
+- D flip-flop and register design
+- Up/down counter
+- FSM sequence detector
+- 4-bit arithmetic logic unit (ALU)
 
-Refer to the project directory for implementation details and simulation instructions as they are documented.
+### Intermediate
+More advanced digital design topics covering:
+- SPI master/slave communication
+- I²C master/slave communication
+- UART transceiver
+- Register file design
 
-## Getting started
+### Advanced
+A forward-looking section for increasingly complex designs and processor-related digital blocks as the portfolio grows.
 
-Clone the repository and browse the section or project you are interested in:
+For detailed project listings and structure, see the [Academic README](./Academic/README.md).
+
+## Professional Track
+
+The current professional project is:
+
+- [esim-modbus-rtu-master-slave](./Professional/esim-modbus-rtu-master-slave/)
+
+This project includes:
+- Modbus master and slave RTL design
+- UART transmit/receive modules
+- CRC-16 Modbus checksum generation
+- Verification testbenches for timing, noise, system behavior, and UART loopback operation
+
+The design is structured around a realistic communication stack and follows the practical workflow of digital hardware verification: RTL implementation, testbench creation, and simulation validation.
+
+## Skills and Focus Areas
+
+- RTL Design in Verilog
+- Digital Logic Design
+- Finite State Machines (FSM)
+- Sequential Circuit Design
+- Serial Protocols: SPI, I²C, UART
+- CRC and Error Detection
+- Testbench Development
+- Simulation and Waveform Analysis
+
+## Tools and Simulation Environment
+
+The projects in this repository are built around hardware-design workflows and simulation tooling such as:
+- Verilog/SystemVerilog
+- Icarus Verilog
+- EDA Playground
+- EPWave
+- waveform viewers and logic debugging tools
+
+## Learning Philosophy
+
+This repository reflects an iterative approach to VLSI learning:
+
+1. Build fundamental digital blocks
+2. Understand timing and control behavior
+3. Implement communication protocols
+4. Validate with testbenches and waveform analysis
+5. Progress toward robust system-level hardware design
+
+## Getting Started
+
+Clone the repository locally:
 
 ```bash
 git clone https://github.com/sandipseal458/VLSI-.git
 cd VLSI-
 ```
 
-Each project may have its own source files, testbench, and simulator requirements. Check its README or project files before running a simulation.
+Then open the relevant section:
 
-## Tools and languages
+- `Academic/` for learning-based designs
+- `Professional/` for advanced or application-oriented projects
 
-The collection primarily uses **Verilog** for RTL and testbenches. Individual projects may use different simulators or waveform viewers; see the relevant project documentation for specific requirements and commands.
+## Roadmap
 
-## Contributing and feedback
-
-This is a portfolio and learning repository. Suggestions, issue reports, and constructive feedback are welcome. When proposing changes, please include the affected project and enough detail to reproduce or understand the change.
+The repository is continuously expanding with:
+- new RTL designs
+- protocol-based implementations
+- verification-focused projects
+- larger integrated digital systems
 
 ## Author
 
-**Sandip Seal** · [GitHub](https://github.com/sandipseal458) · [LinkedIn](https://www.linkedin.com/in/sandip-seal/)
+Sandip Seal
+
+- GitHub: https://github.com/sandipseal458
+- LinkedIn: https://www.linkedin.com/in/sandip-seal/
+- Email: sandipseal458@gmail.com
+
+## License
+
+This repository is intended for educational and portfolio purposes. Please respect the source usage and attribution terms of any associated materials or project references.
