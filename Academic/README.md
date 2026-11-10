@@ -27,6 +27,7 @@ Projects are organised by difficulty level:
 
 ```
 VLSI-/
+├── Academic/
 ├── Beginner/
 │   ├── P01-4bit-adder/
 │   ├── P02-4bit-mux-demux/
